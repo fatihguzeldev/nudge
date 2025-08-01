@@ -1,0 +1,79 @@
+{
+  "intervals": [
+    {
+      "id": "morning-motivation",
+      "startTime": "08:00",
+      "endTime": "10:00",
+      "enabled": true,
+      "messages": [
+        {
+          "id": "m1",
+          "content": "nabıyon baba çalışıyon mu yoksa saldın mı? hadi la kalk artık yatağından"
+        },
+        {
+          "id": "m2", 
+          "content": "hadi da daha kalkacan da kahve yapacan da ohooo"
+        },
+        {
+          "id": "m3",
+          "content": "utan amınakoyim herkes senden 10 kat ileride",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "id": "lunch-reminder",
+      "startTime": "12:00",
+      "endTime": "13:30",
+      "enabled": true,
+      "messages": [
+        {
+          "id": "l1",
+          "content": "bak çok yeme sonra yumuşuyon iyice bayılırsın iş yapamazsın ona göre"
+        },
+        {
+          "id": "l2",
+          "content": "yemekten sonra kodlamaya başlican ha unutma"
+        }
+      ]
+    },
+    {
+      "id": "afternoon-check",
+      "startTime": "15:00",
+      "endTime": "17:00",
+      "enabled": true,
+      "messages": [
+        {
+          "id": "a1",
+          "content": "az kaldı kirwem dayan sık dişini, şaka şaka herkes senden en iyisini bekliyo unutma bak"
+        },
+        {
+          "id": "a2",
+          "content": "çalışıyon de mi la bak oraya gelmiyim"
+        },
+        {
+          "id": "a3",
+          "content": "baba bak hele bi çalışmadığını görürsem ağzına sıçarım senin ona göre full arkandayım izliyorum seni",
+          "weight": 3
+        }
+      ]
+    },
+    {
+      "id": "evening-wrap",
+      "startTime": "19:00",
+      "endTime": "21:00",
+      "enabled": false,
+      "messages": [
+        {
+          "id": "e1",
+          "content": "ne yaptın la bugün, hiçbişi di mi hazır yiyici pezevenk seni"
+        },
+        {
+          "id": "e2",
+          "content": "gün içinde bir şey yapmadıysan bunun üzüntüsüyle nası uyuyacaksın"
+        }
+      ]
+    }
+  ],
+  "timezone": "Europe/Istanbul"
+}
