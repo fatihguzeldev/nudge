@@ -1,0 +1,34 @@
+{
+  "intervals": [
+    {
+      "id": "test-interval-1",
+      "startTime": "09:00",
+      "endTime": "10:00",
+      "enabled": true,
+      "messages": [
+        {
+          "id": "msg1",
+          "content": "Test message 1"
+        },
+        {
+          "id": "msg2",
+          "content": "Test message 2",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "id": "test-interval-2",
+      "startTime": "14:00",
+      "endTime": "15:00",
+      "enabled": false,
+      "messages": [
+        {
+          "id": "msg3",
+          "content": "Test message 3"
+        }
+      ]
+    }
+  ],
+  "timezone": "UTC"
+}
