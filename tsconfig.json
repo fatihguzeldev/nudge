@@ -14,6 +14,7 @@
     "declarationMap": true,
     "sourceMap": true,
     "resolveJsonModule": true,
+    "noImplicitOverride": true,
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"],

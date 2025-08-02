@@ -36,7 +36,9 @@
     "typescript": "5.3.3"
   },
   "dependencies": {
+    "@getbrevo/brevo": "3.0.1",
     "@types/nodemailer": "6.4.14",
+    "dotenv": "17.2.1",
     "nodemailer": "6.10.1"
   }
 }
