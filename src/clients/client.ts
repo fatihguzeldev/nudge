@@ -1,5 +1,5 @@
-abstract class Client<T> {
-  abstract sendMessage(payload: T): Promise<void>
-}
+import { Message } from '../types/messages'
 
-export default Client
+export abstract class Client {
+  abstract sendMessage(message: Message): Promise<void>
+}

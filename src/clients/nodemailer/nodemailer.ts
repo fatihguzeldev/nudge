@@ -1,8 +1,8 @@
-import Client from '../client'
-import { MailMessage } from '../../types/messages'
+import { Client } from '../client'
+import { Message } from '../../types/messages'
 import nodemailer from 'nodemailer'
 
-export class NodemailerClient extends Client<MailMessage> {
+export class NodemailerClient extends Client {
   private readonly transporter: nodemailer.Transporter
   private readonly smtp: {
     host: string
@@ -56,22 +56,15 @@ export class NodemailerClient extends Client<MailMessage> {
     })
   }
 
-  override async sendMessage(payload: MailMessage): Promise<void> {
-    try {
-      const { subject, body } = payload
-
-      const mailOptions: nodemailer.SendMailOptions = {
-        from: this.senderEmail,
-        to: this.toEmail,
-        subject,
-        text: body,
-        html: `<p>${body}</p>`,
-      }
-
-      await this.transporter.sendMail(mailOptions)
-    } catch (error) {
-      console.error(error)
-      throw new Error('nodemailer: failed to send email')
+  override async sendMessage(message: Message): Promise<void> {
+    const mailOptions: nodemailer.SendMailOptions = {
+      from: this.senderEmail,
+      to: this.toEmail,
+      subject: 'nudge reminder',
+      text: message.body,
+      html: `<p>${message.body}</p>`,
     }
+
+    await this.transporter.sendMail(mailOptions)
   }
 }

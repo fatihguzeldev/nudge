@@ -1,8 +1,8 @@
-import Client from '../client'
-import { MailMessage } from '../../types/messages'
-import Brevo from '@getbrevo/brevo'
+import { Client } from '../client'
+import { Message } from '../../types/messages'
+import * as Brevo from '@getbrevo/brevo'
 
-export class BrevoClient extends Client<MailMessage> {
+export class BrevoClient extends Client {
   private readonly brevo: Brevo.TransactionalEmailsApi
   private readonly senderEmail: string
   private readonly senderName: string
@@ -32,23 +32,17 @@ export class BrevoClient extends Client<MailMessage> {
     )
   }
 
-  override async sendMessage(payload: MailMessage): Promise<void> {
-    const { subject, body } = payload
+  override async sendMessage(message: Message): Promise<void> {
+    const emailMessage = new Brevo.SendSmtpEmail()
 
-    const message = new Brevo.SendSmtpEmail()
-    message.subject = subject
-    message.textContent = body
-    message.to = [{ email: this.toEmail }]
-    message.sender = {
+    emailMessage.subject = 'nudge reminder'
+    emailMessage.textContent = message.body
+    emailMessage.to = [{ email: this.toEmail }]
+    emailMessage.sender = {
       email: this.senderEmail,
       name: this.senderName,
     }
 
-    try {
-      await this.brevo.sendTransacEmail(message)
-    } catch (error) {
-      console.error(error)
-      throw new Error('brevo: failed to send email')
-    }
+    await this.brevo.sendTransacEmail(emailMessage)
   }
 }

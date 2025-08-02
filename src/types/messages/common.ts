@@ -3,6 +3,6 @@ export enum ClientType {
   NODEMAILER = 'nodemailer',
 }
 
-export interface BaseMessage {
-  type: ClientType
+export interface Message {
+  body: string
 }
