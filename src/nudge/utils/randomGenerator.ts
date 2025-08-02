@@ -50,7 +50,10 @@ export class RandomGenerator {
       return NUDGE_CONFIG.fallbackMessage
     }
 
-    const randomIndex = Math.floor(Math.random() * messages.length)
+    // add some entropy to make it more random
+    const entropy = Date.now() + Math.random() + process.pid
+    const randomIndex = Math.floor((Math.random() + entropy) % messages.length)
+
     return messages[randomIndex].body
   }
 

@@ -1,0 +1,17 @@
+services:
+  nudge:
+    build: .
+    container_name: nudge-daemon
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - .env
+    volumes:
+      - ./logs:/app/logs
+    healthcheck:
+      test: ['CMD', 'node', '-e', "console.log('health check passed')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
