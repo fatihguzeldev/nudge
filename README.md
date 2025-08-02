@@ -44,7 +44,7 @@ src/
 ### 1. clone and install
 
 ```bash
-git clone https://github.com/fatihguzel/nudge.git
+git clone https://github.com/fatihguzeldev/nudge.git
 cd nudge
 npm install
 ```
