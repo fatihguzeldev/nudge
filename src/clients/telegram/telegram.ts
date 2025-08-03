@@ -29,21 +29,14 @@ export class TelegramClient extends Client {
   }
 
   override async sendMessage(message: Message): Promise<void> {
-    try {
+      // your options here
+      const telegramOptions: TelegramBot.SendMessageOptions = {}
+
       await this.bot.sendMessage(
         this.chatId,
         this.formatMessage(message.body),
-        {
-          parse_mode: this.parseMode,
-          disable_notification: this.disableNotification,
-          disable_web_page_preview: true,
-        },
+        telegramOptions,
       )
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Unknown error'
-      throw new Error(`Failed to send Telegram message: ${errorMessage}`)
-    }
   }
 
   /**
