@@ -12,7 +12,7 @@ nudge is a self-hosted daemon that helps you stay motivated by sending random me
 
 - **timezone-aware scheduling**: supports any iana timezone (default: europe/istanbul)
 - **precise time ranges**: use hh:mm format for minute-level precision
-- **multiple email clients**: brevo (api) and nodemailer (smtp) support
+- **multiple notification clients**: brevo (api), nodemailer (smtp), and telegram bot support
 - **daily reset**: automatically generates new schedules every day at 00:00
 - **graceful shutdown**: handles process termination properly
 - **environment validation**: checks required configuration on startup
@@ -24,10 +24,11 @@ nudge is a self-hosted daemon that helps you stay motivated by sending random me
 src/
 ├── app.ts                      # main daemon entry point
 ├── config.ts                   # nudge configuration
-├── clients/                    # email client implementations
+├── clients/                    # notification client implementations
 │   ├── client.ts               # abstract client interface
 │   ├── brevo/                  # brevo api client
-│   └── nodemailer/             # nodemailer smtp client
+│   ├── nodemailer/             # nodemailer smtp client
+│   └── telegram/               # telegram bot client
 ├── nudge/                      # core nudge logic
 │   ├── nudgeManager.ts         # nudge generation and execution
 │   ├── types.ts                # nudge-related types
@@ -56,7 +57,7 @@ copy `.env.example` to `.env` and configure:
 ```bash
 # required
 TIMEZONE=Europe/Istanbul
-USE_CLIENTS=brevo,nodemailer
+USE_CLIENTS=brevo,nodemailer,telegram
 
 # brevo configuration (optional)
 BREVO_API_KEY=your_api_key
@@ -72,6 +73,12 @@ NODEMAILER_SMTP_AUTH_USER=your@email.com
 NODEMAILER_SMTP_AUTH_PASS=your_app_password
 NODEMAILER_SENDER_EMAIL=your@email.com
 NODEMAILER_TO_EMAIL=recipient@email.com
+
+# telegram configuration (optional)
+TELEGRAM_BOT_TOKEN=your_bot_token_from_botfather
+TELEGRAM_CHAT_ID=your_chat_id
+TELEGRAM_PARSE_MODE=HTML
+TELEGRAM_DISABLE_NOTIFICATION=false
 ```
 
 ### 3. configure nudges
@@ -148,6 +155,54 @@ docker-compose up -d
 - **error handling**: if one client fails, others are still tried
 - **modular design**: each client is self-contained
 
+## telegram setup
+
+### creating a telegram bot
+
+1. **create a bot with botfather**:
+
+   - open telegram and search for `@BotFather`
+   - send `/newbot` command
+   - follow the prompts to name your bot
+   - save the bot token you receive
+
+2. **get your chat id**:
+
+   - start a chat with your bot
+   - send any message to your bot
+   - visit `https://api.telegram.org/bot<YOUR_BOT_TOKEN>/getUpdates`
+   - find your chat id in the response (look for `"chat":{"id":...}`)
+   - alternatively, you can use @userinfobot to get your user id
+
+3. **configure environment variables**:
+
+   ```bash
+   TELEGRAM_BOT_TOKEN=123456789:ABCdefGHIjklMNOpqrsTUVwxyz
+   TELEGRAM_CHAT_ID=123456789
+   TELEGRAM_PARSE_MODE=HTML  # optional, defaults to HTML
+   TELEGRAM_DISABLE_NOTIFICATION=false  # optional, send silently
+   ```
+
+4. **add telegram to use_clients**:
+   ```bash
+   USE_CLIENTS=telegram
+   # or combine with other clients
+   USE_CLIENTS=telegram,brevo,nodemailer
+   ```
+
+### telegram message formatting
+
+the telegram client supports three parse modes:
+
+- **html**: basic html formatting (default)
+  - `<b>bold</b>`, `<i>italic</i>`, `<code>code</code>`
+- **markdown**: classic markdown formatting
+  - `*bold*`, `_italic_`, `` `code` ``
+- **markdownv2**: updated markdown with more features
+  - requires escaping special characters
+
+messages are automatically prefixed with `🔔 nudge reminder` for easy identification.
+
 ## configuration
 
 ### time format
@@ -174,6 +229,7 @@ messages: [{ body: 'your message here' }, { body: 'another message' }]
 | `USE_CLIENTS`  | yes         | comma-separated client list   |
 | `BREVO_*`      | no (either) | brevo api configuration       |
 | `NODEMAILER_*` | no (either) | nodemailer smtp configuration |
+| `TELEGRAM_*`   | no (either) | telegram bot configuration    |
 
 ## docker deployment
 
@@ -290,14 +346,16 @@ docs(readme): update installation instructions
 
 ### adding new clients
 
-to add a new notification client:
+to add a new notification client (see telegram implementation as reference):
 
-1. create a new client class in `src/clients/`
+1. create a new client class in `src/clients/` (e.g., `src/clients/telegram/telegram.ts`)
 2. extend the `Client` abstract class
 3. implement the `sendMessage(message: Message)` method
-4. add the client to the `ClientType` enum
-5. update the `NudgeManager.initializeClients()` method
-6. add configuration examples to the readme
+4. add the client to the `ClientType` enum in `src/types/messages/common.ts`
+5. update the `NudgeManager.initializeClients()` method in `src/nudge/nudgeManager.ts`
+6. add configuration examples to `.env.example` and readme
+7. create an index file for exports (e.g., `src/clients/telegram/index.ts`)
+8. update `src/clients/index.ts` to export the new client
 
 ### reporting issues
 

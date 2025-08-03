@@ -1,7 +1,12 @@
 import { NUDGE_CONFIG } from '../config'
 import { RandomGenerator } from './utils'
 import { ScheduledNudge } from './types'
-import { BrevoClient, NodemailerClient, Client } from '../clients'
+import {
+  BrevoClient,
+  NodemailerClient,
+  TelegramClient,
+  Client,
+} from '../clients'
 import { DateTime } from 'luxon'
 import { ClientType } from '../types'
 
@@ -25,6 +30,10 @@ export class NudgeManager {
 
     if (useClients.includes(ClientType.NODEMAILER)) {
       this.clients.set(ClientType.NODEMAILER, new NodemailerClient())
+    }
+
+    if (useClients.includes(ClientType.TELEGRAM)) {
+      this.clients.set(ClientType.TELEGRAM, new TelegramClient())
     }
 
     if (this.clients.size === 0) {
