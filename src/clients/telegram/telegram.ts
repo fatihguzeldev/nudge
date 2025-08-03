@@ -29,14 +29,17 @@ export class TelegramClient extends Client {
   }
 
   override async sendMessage(message: Message): Promise<void> {
-      // your options here
-      const telegramOptions: TelegramBot.SendMessageOptions = {}
+    const telegramOptions: TelegramBot.SendMessageOptions = {
+      parse_mode: this.parseMode,
+      disable_notification: this.disableNotification,
+      disable_web_page_preview: true,
+    }
 
-      await this.bot.sendMessage(
-        this.chatId,
-        this.formatMessage(message.body),
-        telegramOptions,
-      )
+    await this.bot.sendMessage(
+      this.chatId,
+      this.formatMessage(message.body),
+      telegramOptions,
+    )
   }
 
   /**
