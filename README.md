@@ -12,7 +12,7 @@ nudge is a self-hosted daemon that helps you stay motivated by sending random me
 
 - **timezone-aware scheduling**: supports any iana timezone (default: europe/istanbul)
 - **precise time ranges**: use hh:mm format for minute-level precision
-- **multiple notification clients**: brevo (api), nodemailer (smtp), and telegram bot support
+- **multiple notification clients**: brevo (api), nodemailer (smtp), telegram bot, and discord webhook support
 - **daily reset**: automatically generates new schedules every day at 00:00
 - **graceful shutdown**: handles process termination properly
 - **environment validation**: checks required configuration on startup
@@ -28,7 +28,8 @@ src/
 │   ├── client.ts               # abstract client interface
 │   ├── brevo/                  # brevo api client
 │   ├── nodemailer/             # nodemailer smtp client
-│   └── telegram/               # telegram bot client
+│   ├── telegram/               # telegram bot client
+│   └── discord/                # discord webhook client
 ├── nudge/                      # core nudge logic
 │   ├── nudgeManager.ts         # nudge generation and execution
 │   ├── types.ts                # nudge-related types
@@ -57,7 +58,7 @@ copy `.env.example` to `.env` and configure:
 ```bash
 # required
 TIMEZONE=Europe/Istanbul
-USE_CLIENTS=brevo,nodemailer,telegram
+USE_CLIENTS=brevo,nodemailer,telegram,discord
 
 # brevo configuration (optional)
 BREVO_API_KEY=your_api_key
@@ -79,6 +80,9 @@ TELEGRAM_BOT_TOKEN=your_bot_token_from_botfather
 TELEGRAM_CHAT_ID=your_chat_id
 TELEGRAM_PARSE_MODE=HTML
 TELEGRAM_DISABLE_NOTIFICATION=false
+
+# discord configuration (optional)
+DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/...
 ```
 
 ### 3. configure nudges
@@ -203,6 +207,55 @@ the telegram client supports three parse modes:
 
 messages are automatically prefixed with `🔔 nudge reminder` for easy identification.
 
+## discord setup
+
+### creating a discord webhook
+
+1. **open discord server settings**:
+
+   - right-click on your server
+   - select "server settings" > "integrations"
+
+2. **create webhook**:
+
+   - click "webhooks" > "new webhook"
+   - choose a channel for notifications
+   - customize name and avatar (optional)
+   - copy the webhook url
+
+3. **configure in .env** (only webhook URL is required):
+
+   ```env
+   DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/123456789/abcdefghijklmnop
+   ```
+
+4. **add discord to use_clients**:
+   ```env
+   USE_CLIENTS=discord
+   # or combine with others:
+   USE_CLIENTS=discord,telegram,brevo
+   ```
+
+### optional discord configuration
+
+you can customize the discord messages with these optional settings:
+
+```env
+DISCORD_USERNAME=my custom bot     # defaults to "nudge bot"
+DISCORD_AVATAR_URL=https://...     # custom avatar image
+DISCORD_USE_EMBEDS=false           # defaults to true (rich formatting)
+DISCORD_EMBED_COLOR=16711680       # decimal color (16711680 = red)
+```
+
+### discord message formatting
+
+the discord client supports two modes:
+
+- **rich embeds** (default): formatted messages with color, title, description, and timestamp
+- **plain text**: simple text messages (set DISCORD_USE_EMBEDS=false)
+
+messages are automatically prefixed with "🔔 **nudge reminder**" for easy identification.
+
 ## configuration
 
 ### time format
@@ -230,6 +283,7 @@ messages: [{ body: 'your message here' }, { body: 'another message' }]
 | `BREVO_*`      | no (either) | brevo api configuration       |
 | `NODEMAILER_*` | no (either) | nodemailer smtp configuration |
 | `TELEGRAM_*`   | no (either) | telegram bot configuration    |
+| `DISCORD_*`    | no (either) | discord webhook configuration |
 
 ## docker deployment
 

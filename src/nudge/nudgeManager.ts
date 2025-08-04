@@ -5,6 +5,7 @@ import {
   BrevoClient,
   NodemailerClient,
   TelegramClient,
+  DiscordClient,
   Client,
 } from '../clients'
 import { DateTime } from 'luxon'
@@ -34,6 +35,10 @@ export class NudgeManager {
 
     if (useClients.includes(ClientType.TELEGRAM)) {
       this.clients.set(ClientType.TELEGRAM, new TelegramClient())
+    }
+
+    if (useClients.includes(ClientType.DISCORD)) {
+      this.clients.set(ClientType.DISCORD, new DiscordClient())
     }
 
     if (this.clients.size === 0) {

@@ -1,4 +1,5 @@
 export * from './brevo'
 export * from './nodemailer'
 export * from './telegram'
+export * from './discord'
 export { Client } from './client'
