@@ -1,5 +1,6 @@
 import { Client } from '../client'
 import { Message } from '../../types/messages'
+import { DISCORD_DEFAULTS } from './defaults'
 
 interface DiscordEmbed {
   title: string
@@ -37,10 +38,10 @@ export class DiscordClient extends Client {
     this.webhookUrl = process.env.DISCORD_WEBHOOK_URL
 
     // All optional settings with sensible defaults
-    this.username = process.env.DISCORD_USERNAME || 'nudge bot'
+    this.username = process.env.DISCORD_USERNAME || DISCORD_DEFAULTS.USERNAME
     this.avatarUrl = process.env.DISCORD_AVATAR_URL
     this.useEmbeds = process.env.DISCORD_USE_EMBEDS !== 'false' // defaults to true
-    this.embedColor = parseInt(process.env.DISCORD_EMBED_COLOR || '3447003', 10)
+    this.embedColor = parseInt(process.env.DISCORD_EMBED_COLOR || DISCORD_DEFAULTS.EMBED_COLOR, 10)
   }
 
   override async sendMessage(message: Message): Promise<void> {
@@ -56,12 +57,12 @@ export class DiscordClient extends Client {
       // Use rich embed formatting
       payload.embeds = [
         {
-          title: '🔔 nudge reminder',
+          title: DISCORD_DEFAULTS.EMBED_TITLE,
           description: message.body,
           color: this.embedColor,
           timestamp: new Date().toISOString(),
           footer: {
-            text: 'nudge',
+            text: DISCORD_DEFAULTS.EMBED_FOOTER_TEXT,
           },
         },
       ]
@@ -78,20 +79,16 @@ export class DiscordClient extends Client {
       body: JSON.stringify(payload),
     })
 
-    if (!response.ok) {
-      const errorText = await response.text()
-      throw new Error(
-        `discord webhook failed with status ${response.status}: ${errorText}`,
-      )
-    }
-
     // Handle rate limiting
     if (response.status === 429) {
       const retryAfter = response.headers.get('Retry-After')
       if (retryAfter) {
         const retryMs = parseInt(retryAfter, 10) * 1000
-        console.log(`discord rate limited, retrying after ${retryMs}ms`)
+
+        console.log(`${DISCORD_DEFAULTS.RATE_LIMIT_LOG_PREFIX} ${retryMs}ms`)
+
         await new Promise((resolve) => setTimeout(resolve, retryMs))
+
         return this.sendMessage(message)
       }
     }
@@ -102,6 +99,6 @@ export class DiscordClient extends Client {
    * adds a header to identify nudge messages
    */
   private formatMessage(body: string): string {
-    return `🔔 **nudge reminder**\n\n${body}`
+    return `${DISCORD_DEFAULTS.PLAIN_TEXT_PREFIX}\n\n${body}`
   }
 }
