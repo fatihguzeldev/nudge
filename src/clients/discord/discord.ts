@@ -40,8 +40,13 @@ export class DiscordClient extends Client {
     // All optional settings with sensible defaults
     this.username = process.env.DISCORD_USERNAME || DISCORD_DEFAULTS.USERNAME
     this.avatarUrl = process.env.DISCORD_AVATAR_URL
-    this.useEmbeds = process.env.DISCORD_USE_EMBEDS !== 'false' // defaults to true
-    this.embedColor = parseInt(process.env.DISCORD_EMBED_COLOR || DISCORD_DEFAULTS.EMBED_COLOR, 10)
+
+    // defaults to true
+    this.useEmbeds = process.env.DISCORD_USE_EMBEDS !== 'false'
+    this.embedColor = parseInt(
+      process.env.DISCORD_EMBED_COLOR || DISCORD_DEFAULTS.EMBED_COLOR,
+      10,
+    )
   }
 
   override async sendMessage(message: Message): Promise<void> {
@@ -82,6 +87,7 @@ export class DiscordClient extends Client {
     // Handle rate limiting
     if (response.status === 429) {
       const retryAfter = response.headers.get('Retry-After')
+
       if (retryAfter) {
         const retryMs = parseInt(retryAfter, 10) * 1000
 

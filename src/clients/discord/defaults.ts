@@ -1,5 +1,3 @@
-// src/clients/discord/defaults.ts
-
 export const DISCORD_DEFAULTS = {
   USERNAME: 'nudge bot',
   USE_EMBEDS: true,
