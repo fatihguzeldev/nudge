@@ -10,13 +10,38 @@ import {
 } from '../clients'
 import { DateTime } from 'luxon'
 import { ClientType } from '../types'
+import LLMService from '../llmServices/service'
 
 export class NudgeManager {
   private scheduledNudges: Map<string, ScheduledNudge> = new Map()
   private clients: Map<string, Client> = new Map()
+  private llmService: LLMService | null = null
 
   constructor() {
     this.initializeClients()
+    this.initializeLLMService()
+  }
+
+  /**
+   * initializes LLM service if configured via environment variables
+   */
+  private initializeLLMService(): void {
+    const useLLM = process.env.USE_LLM === 'true'
+
+    if (useLLM) {
+      const llmConfig = {
+        model: process.env.LLM_MODEL || 'gpt-3.5-turbo',
+        temperature: process.env.LLM_TEMPERATURE || '0.7',
+        maxTokens: process.env.LLM_MAX_TOKENS || '100',
+      }
+
+      const clientType = process.env.LLM_CLIENT_TYPE || 'openai'
+
+      this.llmService = new LLMService(llmConfig, clientType)
+      console.log(`LLM service initialized with ${clientType}`)
+    } else {
+      console.log('LLM service disabled - using default messages')
+    }
   }
 
   /**
@@ -49,15 +74,22 @@ export class NudgeManager {
   /**
    * generates all nudges for the current day
    */
-  generateDailyNudges(): void {
+  async generateDailyNudges(): Promise<void> {
     for (const nudgeConfig of NUDGE_CONFIG.nudges) {
       try {
         const scheduledTime = RandomGenerator.generateRandomTime(
           nudgeConfig.range,
         )
-        const message = RandomGenerator.selectRandomMessage(
-          nudgeConfig.messages,
-        )
+        let message: string
+
+        if (this.llmService) {
+          message = await this.llmService.generateResponse(
+            'Generate nudge message',
+          ) // prompt mesajını değiştir
+        } else {
+          message = RandomGenerator.selectRandomMessage(nudgeConfig.messages)
+        }
+
         const id = RandomGenerator.generateNudgeId()
 
         const scheduledNudge: ScheduledNudge = {
