@@ -14,7 +14,8 @@ export class CronManager {
    */
   start(): void {
     // generate initial nudges for today
-    this.generateAndScheduleNudges()
+    // ensure async generation is handled without blocking caller
+    void this.generateAndScheduleNudges()
 
     // schedule next daily reset at 00:00
     this.scheduleDailyReset()
@@ -23,18 +24,18 @@ export class CronManager {
   /**
    * generates nudges and schedules them with setTimeout
    */
-  private generateAndScheduleNudges(): void {
+  private async generateAndScheduleNudges(): Promise<void> {
     console.log('cronManager: generating daily nudges...')
 
     this.nudgeManager.clearScheduledNudges()
 
-    this.nudgeManager.generateDailyNudges()
+    // wait for async nudge generation (LLM or fallback) to complete
+    await this.nudgeManager.generateDailyNudges()
 
     const nudgeIds = this.nudgeManager.getScheduledNudgeIds()
 
     for (const nudgeId of nudgeIds) {
       const nudge = this.nudgeManager.getScheduledNudge(nudgeId)
-
       if (!nudge) {
         continue
       }
@@ -84,7 +85,7 @@ export class CronManager {
 
       this.clearAllTimeouts()
 
-      this.generateAndScheduleNudges()
+      void this.generateAndScheduleNudges()
 
       this.scheduleDailyReset()
     }, delay)

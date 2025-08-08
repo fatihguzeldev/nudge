@@ -17,8 +17,8 @@ export const NUDGE_CONFIG: NudgeConfig = {
   nudges: [
     {
       range: {
-        startTime: '21:07',
-        endTime: '21:08',
+        startTime: '15:13',
+        endTime: '15:14',
       },
       messages: [
         {
