@@ -1,5 +1,5 @@
 import OpenAI from 'openai'
-import { BaseLLMConfig, LLMClient } from '../types'
+import { BaseLLMConfig, LLMClient, ChatInput } from '../types'
 
 export class OpenAIClient implements LLMClient {
   private client: OpenAI
@@ -10,14 +10,14 @@ export class OpenAIClient implements LLMClient {
     const apiKey = process.env.OPENAI_API_KEY
 
     if (!apiKey) {
-      throw new Error('apikey yok')
+      throw new Error('No OpenAI API key found!')
     }
     this.client = new OpenAI({
       apiKey: apiKey,
     })
   }
 
-  async createResponse(input: string) {
+  async createResponse(input: ChatInput[]): Promise<string> {
     const response = await this.client.responses.create({
       model: this.config.model,
       input: input,

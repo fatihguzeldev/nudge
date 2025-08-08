@@ -83,9 +83,7 @@ export class NudgeManager {
         let message: string
 
         if (this.llmService) {
-          message = await this.llmService.generateResponse(
-            'Generate nudge message',
-          ) // prompt mesajını değiştir
+          message = await this.llmService.generateResponse()
         } else {
           message = RandomGenerator.selectRandomMessage(nudgeConfig.messages)
         }
